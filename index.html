@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto COVID-19 México</title>
+    <script src="js/p5.min.js"></script>
+    <script src="js/sketch.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" integrity="undefined" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.css' rel='stylesheet' />   
+    
+
+    <style type="text/css">
+        .column {
+            text-align:center;
+        }
+
+        #map {
+            margin-left: 35px;
+            border-radius: 20px;
+            border: 3px solid black;
+            display: inline;
+        }
+
+        #info {
+            display: inline;
+        }
+
+    </style>
+</head>
+
+<body>
+    <p>
+    <div class="column">
+        <div class="row">
+            <div id='map' style='width: 1320px; height: 720px;'></div>
+            <div id='info' style='width: 100px; height: 500px;'></div>
+            <p>
+            <!-- Button trigger modal -->
+            <p>
+            <button id='infectedBtn' type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Gráfica Infectados</button>
+            <button id='deathsBtn' type="button" class="btn btn-primary" data-toggle="modal" data-target="#deathsModal">Gráfica Defunciones</button>
+        </div>
+    </div>
+
+    <!-- INFECTED MODAL -->
+    <div id='infectedModal' class="modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Infectados</h5>
+          </div>
+          <div class="modal-body">
+            <canvas id="infectedChart" width="400" height="400"></canvas>
+          </div>
+          <div class="modal-footer">
+            <button id='infectedClose' type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INFECTED MODAL -->
+    <div id='deathsModal' class="modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Defunciones</h5>
+          </div>
+          <div class="modal-body">
+            <canvas id="deathsChart" width="400" height="400"></canvas>
+          </div>
+          <div class="modal-footer">
+            <button id='deathsClose' type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<script type="text/javascript">
+    var ctx = document.getElementById('infectedChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Ciudad de México', 'B.C.S.', 'Tabasco', 'Sonora', 'Coahuila', 'Yucatan', 'S.L.P.', 'Tamaulipas', 'Nuevo Leon', 'Quintana Roo', 'Colima', 'Guanajuato', 'Sinaloa', 'Campeche', 'Baja California', 'Tlaxcala', 'Guerrero', 'Aguascalientes', 'Durango', 'Puebla', 'Zacatecas', 'Nayarit', 'Michoacan', 'Oaxaca', 'Hidalgo', 'Queretaro', 'Veracruz', 'Jalisco', 'Chihuahua', 'Morelos', 'Chiapas'],
+            datasets: [{
+                label: 'Infectados',
+                data: [138329, 10925, 32868, 35177, 28317, 19426, 24279, 30066, 43667, 12590, 5671, 43054, 19791, 6235, 22137, 7820, 20295, 7753, 9844, 32922, 8122, 6247, 21927, 18694, 13844, 10086, 34679, 29252, 12753, 6283, 8079],
+                backgroundColor: [
+                    'lightgrey'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    var ctx2 = document.getElementById('deathsChart').getContext('2d');
+    var myChart2 = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: ['Ciudad de México', 'B.C.S.', 'Tabasco', 'Sonora', 'Coahuila', 'Yucatan', 'S.L.P.', 'Tamaulipas', 'Nuevo Leon', 'Quintana Roo', 'Colima', 'Guanajuato', 'Sinaloa', 'Campeche', 'Baja California', 'Tlaxcala', 'Guerrero', 'Aguascalientes', 'Durango', 'Puebla', 'Zacatecas', 'Nayarit', 'Michoacan', 'Oaxaca', 'Hidalgo', 'Queretaro', 'Veracruz', 'Jalisco', 'Chihuahua', 'Morelos', 'Chiapas'],
+            datasets: [{
+                label: 'Defunciones',
+                data: [10730, 537, 2893, 2971, 1996, 1635, 1782, 2381, 3306, 1743, 5671, 579, 3099, 3366, 840, 3680, 1133, 2057, 676, 689, 4372, 783, 782, 1827, 1554, 2061, 997, 4591, 3509, 6283, 1483],
+                backgroundColor: [
+                    'lightgrey'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+        $("#infectedBtn").click( function()
+           {
+             $('#infectedModal.modal').show();
+           }
+        );
+
+        $("#infectedClose").click( function()
+           {
+             $('#infectedModal.modal').hide();
+           }
+        );
+
+        $("#deathsBtn").click( function()
+           {
+             $('#deathsModal.modal').show();
+           }
+        );
+
+        $("#deathsClose").click( function()
+           {
+             $('#deathsModal.modal').hide();
+           }
+        );
+
+    // TO MAKE THE MAP APPEAR YOU MUST
+    // ADD YOUR ACCESS TOKEN FROM
+    // https://account.mapbox.com
+    mapboxgl.accessToken = 'pk.eyJ1IjoiZ2Vja29ydXNzaWFuIiwiYSI6ImNrcGdhazRpODBwemIydnBmcmRib2ljamQifQ.rYMx24MF-pvksKad7hvlfg';
+    var mapa = new mapboxgl.Map({
+    container: 'map', // container ID
+    style: 'mapbox://styles/mapbox/streets-v11', // style URL
+    center: [-102.133209, 23.432608], // starting position [lng, lat]
+    zoom: 4.5 // starting zoom
+    });
+    let stats = [];
+    $.ajax({
+            url: "json/data.json",
+            dataType: "json",
+            mimeType: "textPlain",
+            async: false,
+            })          
+            .done(function(data){
+                stats.push(data['State']);
+            });
+    mapa.on('style.load', function () { 
+
+        mapa.addSource("covid", {
+            type: "geojson",
+            data: "json/polygons.json"
+        });
+        mapa.addLayer({
+            'id': 'layer',
+            'type': 'fill',
+            'source': 'covid',
+            'layout': {},
+            'paint': {
+            'fill-color': '#4cd15e',
+            'fill-opacity': 0.5
+            }
+        });
+        mapa.addLayer({
+            'id': 'outline',
+            'type': 'line',
+            'source': 'covid',
+            'layout': {},
+            'paint': {
+            'line-color': '#458A4F',
+            'line-width': 1
+            }
+        });
+        mapa.on('click', 'layer', function (e) {
+            let info =  `<b>${e.features[0].properties.entidad_nombre}</b> </br>
+                        Infectados: ${stats[0][e.features[0].properties.entidad_nombre].infected }</br>
+                        Defunciones: ${stats[0][e.features[0].properties.entidad_nombre].deceased}`
+                new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML(info)
+                .addTo(mapa);
+                console.log(stats[0][e.features[0].properties.entidad_nombre])
+        });
+    });
+
+</script>
+
+</body>
+
+</html>
